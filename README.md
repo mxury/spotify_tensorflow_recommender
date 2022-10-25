@@ -23,13 +23,17 @@ was no trivial way to find users who also listened to those tracks, and better y
 particular user listened to. My idea was then to associate a public playlist as a list of tracks that user listens to, 
 so then the job was to find new playlists that ideally shared some connection with other playlists in the dataset. This
 proved more difficult than one might expect as even though Spotify API contains a _search_ endpoint it's not clear how 
-to look for similar playlists and using one of Spotify's _recommendation_ endpoints seemed like cheating. In the end
-what I decided to do is to make a list of all unique artists within a playlist and then search for playlists that had 
-that artists name in its description. This would then give me a new set of playlists which would result in a new set of
-users and their songs, then artists then new playlists and so on. I built a small Graph data structure (found [here](https://github.com/mxury/spotify_tensorflow_recommender/blob/main/playlist_artist_graph.py)) to keep track of 
+to look for similar playlists and using one of Spotify's _recommendation_ endpoints seemed like cheating. 
+In the end the data gathering strategy was as follows: 
+1. From a playlist (initial playlist is my own) list all the songs
+2. Find the artist of each song 
+3. Using Spotify's Web API search for playlists which feature the artists' name in the description 
+4. Start again over at 1.
+
+To facilitate this I built a small Graph data structure (found [here](https://github.com/mxury/spotify_tensorflow_recommender/blob/main/playlist_artist_graph.py)) to keep track of 
 this crawling search, which has been visualised below.
 
-[**Network Graph here soon**]
+![Visualisation of graph](https://github.com/mxury/spotify_tensorflow_recommender/blob/main/figs/graph_vis.png)
 
 New vertices of the graph were generated dynamically as the graph was being scanned. I opted for a breadth-first
 search algorithm because I wanted to explore vertices (playlists) that were closest to the initial playlist first as 

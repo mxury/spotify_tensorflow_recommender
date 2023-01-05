@@ -42,16 +42,26 @@ they would be closer/more relevant.
 The script for the search algorthim can be found [here](https://github.com/mxury/spotify_tensorflow_recommender/blob/main/load_data.py).
 
 ## Recommender system using Tensorflow
-Tensorflow has a nice library `tensorflow-recommenders` that contains many useful layers and metrics. Firstly the data 
-was mostly string so it was word embedded using the `StringLookUp` and `Embedding` layers from `tf.keras`, then to score 
-the potential candidates the factorised top-K metric was used and then wrapped in a `tensorflow-recommenders` Model layer 
-which itself is a Keras base model with the training and testing steps taken care of.
+Using the `tensorflow-recommenders` library we utilise a matrix factorisation technique within a two tower model of 
+both the Retrieval and Ranking models. For negative candidates we use in-batch negative sampling.  
 
-The ranking model then takes the candidates from the retrieval model and uses the popularity rating of the song to 
-suggest the most likely candidates. The loss used here is the `MeanSquaredError` metric.
+The Retrieval model consists of a query(user) and a candidate(song) tower. 
+The former uses an `Embedding` layer to convert the user string into a vector with an embedding dimension of 32, with 
+a stack of dense layers on top. 
+The latter while utilises audio features from the Spotify Web API to create a richer representation of each song. 
+The loss used is the `CategoricalCrossEntropy` and the metric with which the model is evaluated is TopK Accuracy, 
+which denotes whether a users song that was previously listened to is within the top K song 
+computed by the model for that specific user.  
 
+
+The ranking model is also a two tower model which takes the candidates from the retrieval model
+and uses the popularity rating of the song to suggest the most likely candidates. The loss used 
+here is the `MeanSquaredError` metric.
+
+The most advanced implementation of the retrieval task can be found in 
+[retrieval_w_audio_features.ipynb](https://github.com/mxury/spotify_tensorflow_recommender/blob/main/retrieval_w_audio_features.ipynb).
 
 ## Improvements
-Include more features that could inform the ranking process, or the retrieval model. However it's very important that 
+Include more features that could inform the ranking process. However, it's very important that 
 the retrieval model stays quick as it has to filter out 100 songs from a dataset of over 10,000! 
 This project is still very much a work in progress! 
